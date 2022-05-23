@@ -1,0 +1,96 @@
+Locate the elements correctly: 
+
+There's an array of objects with all the elements that can be joint
+elements = interconexionsIU.interconexions.objs
+
+In order to position the elements nicely we should set the position of the rect property 
+interconexionsIU.interconexions.objs[0].rect.setPos(1000, 1000, 1200, 1390)
+the function takes 4 args x, y, xx, yy 
+the only catch is that the difference between xx and x should be the elements with and between yy and y the element's height
+the change in position is not instantaneous a refresh should be made
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+Para generar una conexión el diagrama es el siguiente: 
+
+Necesitamos un Icx_connector
+Se genera un conector por cada endpoint de la conexion 
+una vez que tengamos el conector solo hay que pasarselo al método para crear la conexion 
+
+Solo tenemos que pillar los conectores que ya existen
+Icx_Connector.objects
+
+how to identify the splitters
+filtramos por instancia de Icx_splitter
+splitters = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Splitter)
+SPL01 = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Splitter && Number.isInteobj.pare.name)
+
+filtrar por tamaño de cable
+x = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Cable && obj.pare.numConn == 48 )
+
+
+fitramos según haga falta para obtener los conectores 
+
+
+tipos de conector -> these are constant values
+splice = xxxx-f5c5-be993402-9bd8c513-85ba2423
+sliter = xxxx-8788-f90c2b03-476836c6-b02fce34
+
+Once we have the list of connectors it's  a matter of pluggin in the parametters in the function below providing an empty callback
+interconexionsIU.interconexions.doNewConexio()
+doNewIcxConnection(conector1, conector2, tipoConector, safata empty string, servei empty string , callback) 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+para reservar las fibras lo que tenemos que  hacer es simplemente settear el flag reserved_b de la fibra a true y hacer un put al servidor
+por suerte hay una función que ya se encarga de esto: 
+para obtener el listado de fibras disponibles dentro de la capa de interconexiones: 
+
+interconexionsIU.interconexions.elements.fibers -> array con la lista de interconexiones 
+una vez que tenemos la fibra que quermos actualizar solo tenemos que poner reserved_b a true 
+
+Una posible implementación del código que evalua la sat es simplemente ver el número de clientes de la sb
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+splice = "xxxx-f5c5-be993402-9bd8c513-85ba2423"
+sliter = "xxxx-8788-f90c2b03-476836c6-b02fce34"
+
+PORTS_SPLS = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Splitter && Number.isInteger(obj.name))
+
+cable2_id = 'UPP-CL001-SJ14893-J14774'
+cable1_id = 'UPP-CL001-SJ14893-J14775'
+cable3_id = 'UPP-CL001-SJ14893-J14776'
+
+c1 = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Cable && obj.pare.name === cable1_id )
+c2 = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Cable && obj.pare.name === cable2_id )
+c3 = Icx_Connector.objects.filter((obj) => obj.pare instanceof Icx_Cable && obj.pare.name === cable3_id )
+
+let j = 0; 
+const first_lap = (limit, cable, spls) => { 
+        
+	for( let i = 0; i < limit; i=i+3) { 
+		interconexionsIU.interconexions.doNewConexio(cable[i], spls[j], "xxxx-f5c5-be993402-9bd8c513-85ba2423", "", "", () => {}); 
+		j++;
+}
+}
+
+const remaining_laps = ( fibers, cable, spls) => {
+	
+	fibers.forEach( (fiber) => {
+		interconexionsIU.interconexions.doNewConexio(cable[fiber-1], spls[j], "xxxx-f5c5-be993402-9bd8c513-85ba2423", "", "", () => {}); 
+		j++;
+	});
+
+
+}
+
+first_lap(25, c1, PORTS_SPLS)
+first_lap(7, c2, PORTS_SPLS)
+first_lap(7, c3, PORTS_SPLS)
+
+remaining_laps([11, 14, 26], c1, PORTS_SPLS)
+remaining_laps([2, 5], c2, PORTS_SPLS)
+remaining_laps([2], c3, PORTS_SPLS)
+
+remaining_laps([12], c1, PORTS_SPLS)
