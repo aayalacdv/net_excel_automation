@@ -1,4 +1,13 @@
 
+from operator import length_hint
+
+
+class Conection: 
+
+    def __init__(self, node, conn_type) -> None:
+        self.conn_type = conn_type
+        self.node = node
+
 
 class Cable: 
     start = ''
@@ -90,6 +99,21 @@ if __name__ == '__main__':
     branches = []
     branch.append(head)
 
+    def get_main_cable(node): 
+        main = None
+        #get the root of the cable
+        for cbl in cables_arr: 
+            if cbl.end == node.code: 
+                main = cbl
+
+        return main
+    
+    def is_slitter(main, cable): 
+        if main.type == cable.type: 
+            return True 
+    
+        return False 
+
     def find_next(head, branch): 
         
         #find the cables that connect
@@ -98,12 +122,60 @@ if __name__ == '__main__':
                 new_node = Node(cable.end)
                 head.next.append(new_node.code)
                 new_node.prev.append(cable.start)
-
                 #compute slitter and splices for head we need the lenght of cable in case type is not an option 
-
                 branch.append(new_node)
                 find_next(new_node, branch)
-    
+        
+    def compute_conections(branch): 
+        for node in branch: 
+            main = get_main_cable(node=node)
+            #get the rest of conns and sort them by type and later by lenght if size its the same
+
+
+    #compare types so we can sort the list 
+    def compare_cbl_type(cbl1, cbl2) -> int: 
+        type1 = int(cbl1.type.split('')[0])
+        type2 = int(cbl2.type.split('')[0])
+
+        if type1 < type2: 
+            return -1
+        
+        if type1 > type2: 
+            return 1
+
+        if type1 == type2: 
+            if cbl1.length < cbl2.length: 
+                return -1 
+            return 1
+        
+
+
+
+    def sort_cables(cables): 
+
+        for index in range(len(cables)):
+            cable = cables[index]
+            for i in range(1, len(cables)):
+                cmp = compare_cbl_type(cable, cables[i])
+
+                if cmp == 1: 
+                    pass
+                if cmp == -1: 
+                    cables[index] = cables[i]
+                    cables[i] = cable
+
+
+
+
+
+
+
+
+
+            
+
+
+
 
     find_next(head=head, branch=branch)
     
